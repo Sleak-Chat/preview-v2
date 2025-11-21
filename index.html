@@ -10,6 +10,7 @@
         margin: 0;
         padding: 0;
         background-color: white;
+        overflow: hidden;
       }
 
       .grid-container {
@@ -310,7 +311,7 @@
 
       // Add click handler for reset chat button
       document.querySelector('button.icon-button').addEventListener('click', () => {
-        window.resetVisitorId();
+        window.resetChatId();
       });
 
       // Add click handler for share button
@@ -333,11 +334,11 @@
       // Environment detection
       const scriptSrc = window.location.href;
       if (scriptSrc.includes('dev')) {
-        sourceUrl = 'https://development.sleakbot.pages.dev';
-        widgetBaseUrl = 'https://staging.sleak.chat';
-      } else if (scriptSrc.includes('localhost')) {
-        sourceUrl = 'http://localhost:8000';
-        widgetBaseUrl = 'https://staging.sleak.chat';
+        sourceUrl = 'https://sleak-chat.github.io/sleakbot-v2';
+        widgetBaseUrl = 'https://widget-v2-sigma.vercel.app';
+      } else if (scriptSrc.includes('127.0.0.1:')) {
+        sourceUrl = 'http://127.0.0.1:5501/';
+        widgetBaseUrl = 'https://widget-v2-sigma.vercel.app';
       } else {
         sourceUrl = 'https://cdn.sleak.chat';
         widgetBaseUrl = 'https://widget.sleak.chat';
@@ -349,7 +350,7 @@
           try {
             const visitorId = getCookie(`sleakVisitorId_${chatbotId}`);
             const timestamp = new Date().getTime();
-            const chatbotConfigEndpoint = `${widgetBaseUrl}/api/config?id=${chatbotId}&visitor_id=${visitorId}&t=${timestamp}`;
+            const chatbotConfigEndpoint = `${widgetBaseUrl}/api/config?id=${chatbotId}&chat_id=${visitorId}&t=${timestamp}`;
 
             const chatbotConfigRequest = await fetch(chatbotConfigEndpoint, {
               method: 'get',
