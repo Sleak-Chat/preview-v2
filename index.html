@@ -344,20 +344,20 @@
         });
 
       // Add click handler for share button
-      document
-        .querySelectorAll("button.icon-button")[1]
-        .addEventListener("click", async () => {
-          try {
-            await navigator.clipboard.writeText(window.location.href);
-            const toast = document.getElementById("toast");
-            toast.classList.add("show");
-            setTimeout(() => {
-              toast.classList.remove("show");
-            }, 2000);
-          } catch (err) {
-            console.error("Failed to copy URL:", err);
-          }
-        });
+      // document
+      //   .querySelectorAll("button.icon-button")[1]
+      //   .addEventListener("click", async () => {
+      //     try {
+      //       await navigator.clipboard.writeText(window.location.href);
+      //       const toast = document.getElementById("toast");
+      //       toast.classList.add("show");
+      //       setTimeout(() => {
+      //         toast.classList.remove("show");
+      //       }, 2000);
+      //     } catch (err) {
+      //       console.error("Failed to copy URL:", err);
+      //     }
+      //   });
 
       let sourceUrl;
       let dev = false;
