@@ -372,45 +372,76 @@
         });
 
       let sourceUrl;
-      let dev = false;
+      let widgetBaseUrl;
 
       // Environment detection
       const scriptSrc = window.location.href;
-      if (scriptSrc.includes("localhost")) {
-        dev = true;
-        sourceUrl = "http://localhost:8788";
-      } else if (scriptSrc.includes("dev")) {
-        dev = true;
+      if (scriptSrc.includes('dev')) {
         sourceUrl = "https://sleakbot-v2.pages.dev";
+        widgetBaseUrl = 'https://dev.widget.sleak.chat';
+      } else if (scriptSrc.includes('localhost')) {
+        sourceUrl = "http://localhost:8788";
+        widgetBaseUrl = 'https://dew.widget.sleak.chat';
       } else {
         sourceUrl = "https://cdn.sleak.chat";
+        widgetBaseUrl = 'https://widget.sleak.chat';
       }
+
+      // Load chatbot config after 1 second
+      setTimeout(async () => {
+        if (chatbotId) {
+          try {
+            const visitorId = getCookie(`sleakVisitorId_${chatbotId}`);
+            const timestamp = new Date().getTime();
+            const chatbotConfigEndpoint = `${widgetBaseUrl}/api/config?id=${chatbotId}&visitor_id=${visitorId}&t=${timestamp}`;
+
+            const chatbotConfigRequest = await fetch(chatbotConfigEndpoint, {
+              method: 'get',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
+
+            const response = await chatbotConfigRequest.json();
+            const config = response.data.chatbot_config;
+
+            // Update chatbot info
+            const navPath = document.querySelector('.nav-path');
+            const chatbotName = document.getElementById('chatbotName');
+            const chatbotInitial = document.getElementById('chatbotInitial');
+
+            if (config.name) {
+              chatbotName.textContent = config.name;
+              chatbotInitial.textContent = config.name.charAt(0).toUpperCase();
+            }
+
+            if (
+              config.avatar_url &&
+              config.avatar_url !== 'https://uploads-ssl.webflow.com/65911e9735540c235757642f/65b53f83acecf90e74bd8844_profile_pic_default.png' &&
+              config.avatar_url !== 'https://sygpwnluwwetrkmwilea.supabase.co/storage/v1/object/public/users/6c01d03c-b0bd-4521-bd3c-265ba38b482e/Rectangle%20(1).png'
+            ) {
+              // Try setting as an attribute instead
+              chatbotInitial.setAttribute('style', `background-image: url("${config.avatar_url}"); background-size: cover; background-position: center;`);
+              chatbotInitial.textContent = '';
+            }
+
+            // Show the nav path
+            navPath.classList.add('loaded');
+          } catch (err) {
+            console.error('Failed to load chatbot config:', err);
+          }
+        }
+      }, 1000);
 
       if (chatbotId) {
-        const script = document.createElement("script");
-        script.id = "sleakbot";
+        const script = document.createElement('script');
+        script.id = 'sleakbot';
         script.src = `${sourceUrl}/fetchsleakbot.js`;
-        script.setAttribute("chatbot-id", chatbotId);
-        if (dev) script.setAttribute("dev", dev);
+        script.setAttribute('chatbot-id', chatbotId);
         document.head.appendChild(script);
       } else {
-        console.log("no id present in url");
+        console.log('no id present in url');
       }
-
-      // window.addEventListener(
-      //   "sleakCustomFieldsHandlerInitialized",
-      //   function (event) {
-      //     console.log(event);
-      //     exampleData = {
-      //       email: "tom@sleak.chat",
-      //       ordernummer: "R250117953",
-      //     };
-
-      //     setTimeout(() => {
-      //       window.sleakPushCustomFields(exampleData);
-      //     }, 3000);
-      //   }
-      // );
     </script>
   </body>
 </html>
